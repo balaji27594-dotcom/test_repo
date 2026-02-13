@@ -65,14 +65,13 @@ jobs:
       - name: Connect Oracle to network
         run: docker network connect liquibase-network oracle-db || true
 
-      # Download Oracle JDBC Driver
+      # Download Oracle JDBC Driver using Maven Central
       - name: Download Oracle JDBC Driver
         run: |
           mkdir -p ${{ github.workspace }}/liquibase/lib
           cd ${{ github.workspace }}/liquibase/lib
-          curl -o ojdbc11.jar https://download.oracle.com/otn-pub/otn_software/jdbc/233/ojdbc11.jar 2>/dev/null || \
-          wget -q https://download.oracle.com/otn-pub/otn_software/jdbc/233/ojdbc11.jar || \
-          echo "Warning: Could not download JDBC driver, using slim image"
+          # Using free Oracle JDBC driver from Maven Central
+          curl -L -o ojdbc11.jar https://repo1.maven.org/maven2/com/oracle/database/jdbc/ojdbc11/23.1.0.1/ojdbc11-23.1.0.1.jar
 
       # Run Liquibase Docker container
       - name: Run Liquibase migrations
