@@ -57,6 +57,27 @@ jobs:
           EXIT;
           EOF
 
+      # Create a Docker network for communication between containers
+      - name: Create Docker network
+        run: docker network create liquibase-network || true
+
+      # Connect Oracle container to the network
+      - name: Connect Oracle to network
+        run: docker network connect liquibase-network oracle-db || true
+
+      # Run Liquibase Docker container
+      - name: Run Liquibase migrations
+        run: |
+          docker run --rm \
+            --network liquibase-network \
+            -v ${{ github.workspace }}/liquibase/changelog:/liquibase/changelog \
+            liquibase/liquibase:latest \
+            --url=jdbc:oracle:thin:@oracle-db:1521:XE \
+            --username=system \
+            --password=admin123 \
+            --changeLogFile=/liquibase/changelog/db.changelog-master.yaml \
+            update
+
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
