@@ -35,6 +35,28 @@ jobs:
             -e ORACLE_PASSWORD=oracle123 \
             gvenzl/oracle-xe:latest
 
+      # Wait for Oracle Database to be ready
+      - name: Wait for Oracle Database to be ready
+        run: |
+          for i in {1..60}; do
+            if docker exec oracle-db sqlplus -version &> /dev/null; then
+              echo "Oracle Database is ready"
+              exit 0
+            fi
+            echo "Waiting for Oracle Database... ($i/60)"
+            sleep 2
+          done
+          echo "Oracle Database failed to start"
+          exit 1
+
+      # Connect to Oracle Database
+      - name: Connect to Oracle Database
+        run: |
+          docker exec oracle-db sqlplus -v system/admin123@localhost:1521/XE << EOF
+          SELECT * FROM v\$version;
+          EXIT;
+          EOF
+
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
