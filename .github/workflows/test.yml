@@ -69,6 +69,10 @@ jobs:
       - name: Build Liquibase image with Oracle driver
         run: docker build -t liquibase-oracle ${{ github.workspace }}/liquibase
 
+      # Verify Oracle driver is in the image
+      - name: Verify Oracle driver in image
+        run: docker run --rm liquibase-oracle ls -lh /liquibase/lib/ojdbc*.jar
+
       # Run Liquibase Docker container
       - name: Run Liquibase migrations
         run: |
