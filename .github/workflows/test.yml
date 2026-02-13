@@ -25,6 +25,16 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v4
 
+      # Spin up Oracle Database Docker image
+      - name: Start Oracle Database
+        run: |
+          docker run -d \
+            --name oracle-db \
+            -p 1521:1521 \
+            -e ORACLE_ADMIN_PASSWORD=admin123 \
+            -e ORACLE_PASSWORD=oracle123 \
+            gvenzl/oracle-xe:latest
+
       # Runs a single command using the runners shell
       - name: Run a one-line script
         run: echo Hello, world!
